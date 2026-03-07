@@ -121,8 +121,15 @@ pub async fn cmd_redo(
         return Err(user_error("Nothing to redo"));
     }
 
-    let mut op_to_restore = match op_to_redo.parents().at_most_one().ok().flatten() {
-        Some(parent_of_op_to_redo) => parent_of_op_to_redo?,
+    let mut op_to_restore = match op_to_redo
+        .parents()
+        .await?
+        .into_iter()
+        .at_most_one()
+        .ok()
+        .flatten()
+    {
+        Some(parent_of_op_to_redo) => parent_of_op_to_redo,
         None => {
             return Err(internal_error("Undo operation should have a single parent"));
         }
